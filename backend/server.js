@@ -49,16 +49,24 @@ app.get('/', (req, res) => {
     res.send('Employee Management API is running');
 });
 
-// Mount Routes
-app.use('/auth', authRoutes);
-app.use('/employees', employeeRoutes);
-app.use('/admins', adminRoutes);
-app.use('/tasks', taskRoutes);
-app.use('/departments', departmentRoutes);
-app.use('/projects', projectRoutes);
-app.use('/', recruitmentRoutes); // Handles /interviewCalls, /students, /companies
-app.use('/', miscRoutes); // Handles /attendance, /goals, /reports, /messages, /sessions
+// Mount Routes using a sub-router for Vercel /api proxy compatibility
+const apiRouter = express.Router();
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/employees', employeeRoutes);
+apiRouter.use('/admins', adminRoutes);
+apiRouter.use('/tasks', taskRoutes);
+apiRouter.use('/departments', departmentRoutes);
+apiRouter.use('/projects', projectRoutes);
+apiRouter.use('/', recruitmentRoutes); // Handles /interviewCalls, /students, /companies
+apiRouter.use('/', miscRoutes); // Handles /attendance, /goals, /reports, /messages, /sessions
 
+// Apply it globally and onto /api
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
+
+// Start Server locally
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+export default app;
