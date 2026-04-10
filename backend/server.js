@@ -24,7 +24,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/employ
 
 // Middleware
 app.use(cors({
-    origin: '*',
+    origin: 'https://employee-management-system-full-sta-gamma.vercel.app/',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
