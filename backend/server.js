@@ -37,12 +37,29 @@ app.use((req, res, next) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, { 
+    serverSelectionTimeoutMS: 5000 // Fast fail if localhost gets stuck on Vercel
+})
     .then(() => {
         const dbName = mongoose.connection.name;
         console.log(`Connected to MongoDB: ${dbName}`);
     })
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Global DB Connection Validator
+app.use((req, res, next) => {
+    // If Mongoose is not connected, prevent the 10000ms timeout freeze
+    if (mongoose.connection.readyState !== 1) {
+        // Did the user deploy to Vercel without overriding localhost?
+        if (MONGODB_URI.includes('localhost') && process.env.VERCEL) {
+             return res.status(500).json({ 
+                 message: "Deployment Error: Your Vercel app is trying to connect to 'localhost' MongoDB. You MUST create a free MongoDB Atlas cluster online and paste its connection string into Vercel's Environment Variables as 'MONGODB_URI' securely."
+             });
+        }
+        return res.status(500).json({ message: "Database is unreachable. Please check MongoDB connection." });
+    }
+    next();
+});
 
 // Basic Rout
 app.get('/', (req, res) => {
