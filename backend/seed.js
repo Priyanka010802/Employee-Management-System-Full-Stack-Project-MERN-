@@ -9,7 +9,7 @@ import { Admin } from './models/Admin.js';
 import { Department } from './models/Department.js';
 import { Task } from './models/Task.js';
 import { Goal, Attendance, Report } from './models/GoalsAndAttendance.js';
-import { InterviewCall, Student, Company } from './models/Recruitment.js';
+import { InterviewCall, Student, Company, JobListing, InterviewSchedule } from './models/Recruitment.js';
 import { Session, Message } from './models/Misc.js';
 
 dotenv.config();
@@ -57,7 +57,9 @@ const seedData = async () => {
             Company.deleteMany({}),
             Session.deleteMany({}),
             Message.deleteMany({}),
-            Report.deleteMany({})
+            Report.deleteMany({}),
+            JobListing.deleteMany({}),
+            InterviewSchedule.deleteMany({})
         ]);
 
         console.log('Cleared existing data');
@@ -171,6 +173,15 @@ const seedData = async () => {
         if (data.companies) await Company.insertMany(data.companies);
         if (data.messages) await Message.insertMany(data.messages);
         if (data.reports) await Report.insertMany(data.reports);
+
+        if (data.hrdata) {
+            const jobs = data.hrdata.filter(item => item.type === 'job');
+            const interviews = data.hrdata.filter(item => item.type === 'interview' || !item.type);
+            if (jobs.length) await JobListing.insertMany(jobs);
+            if (interviews.length) await InterviewSchedule.insertMany(interviews);
+        }
+
+        if (data.sessions) await Session.insertMany(data.sessions);
 
         console.log('All data seeded successfully');
         process.exit(0);

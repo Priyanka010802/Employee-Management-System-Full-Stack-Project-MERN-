@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/hrdata`;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/interviewSchedules`;
 
 const OfferPage = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const OfferPage = () => {
   };
 
   const offers = data
-    .filter(item => item.type === 'interview' && item.status === 'Completed' && (item.applicants || 0) > 0)
+    .filter(item => item.status === 'Completed' && (item.applicants || 0) > 0)
     .map(interview => ({
       id: `offer-${interview.id}`,
       interviewId: interview.id,

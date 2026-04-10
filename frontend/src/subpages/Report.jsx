@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/hrdata`;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/interviewSchedules`;
 
 const ReportPage = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const ReportPage = () => {
       const res = await fetch(API_URL);
       if (!res.ok) throw new Error("Failed to fetch data");
       const allData = await res.json();
-      const interviewData = allData.filter(item => item.type === 'interview');
+      const interviewData = allData;
       setInterviews(interviewData);
       calculateStats(interviewData);
     } catch (err) {
