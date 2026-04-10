@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "/api"}/students`;
+import { useAuth } from "../context/AuthContext";
 
 const StudentPage = () => {
   const navigate = useNavigate();
+  const { apiCall } = useAuth();
   const [students, setStudents] = useState([]);
   const [modal, setModal] = useState({ add: false, edit: false, view: false });
   const [loading, setLoading] = useState({ page: false, action: false });
@@ -22,11 +22,10 @@ const StudentPage = () => {
     setLoading({ ...loading, page: true });
     setError("");
     try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("Failed to fetch students");
-      setStudents(await res.json());
+      const data = await apiCall('/students');
+      setStudents(data);
     } catch (err) {
-      setError("Could not load students. Check JSON Server at " + API_URL);
+      setError("Could not load students. " + err.message);
     } finally {
       setLoading({ ...loading, page: false });
     }
@@ -38,19 +37,15 @@ const StudentPage = () => {
     setError("");
 
     try {
-      const url = isEdit ? `${API_URL}/${currentStudent.id}` : API_URL;
+      const endpoint = isEdit ? `/students/${currentStudent.id}` : '/students';
       const method = isEdit ? "PUT" : "POST";
       const data = isEdit ? currentStudent : formData;
 
-      const res = await fetch(url, {
+      const result = await apiCall(endpoint, {
         method,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      if (!res.ok) throw new Error(`Failed to ${isEdit ? 'update' : 'save'} student`);
-
-      const result = await res.json();
       setStudents(prev => isEdit
         ? prev.map(s => s.id === result.id ? result : s)
         : [result, ...prev]
@@ -63,7 +58,7 @@ const StudentPage = () => {
       setModal({ add: false, edit: false, view: false });
       setCurrentStudent(null);
     } catch (err) {
-      setError(`Could not ${isEdit ? 'update' : 'save'} student. Please try again.`);
+      setError(`Could not ${isEdit ? 'update' : 'save'} student. ${err.message}`);
     } finally {
       setLoading({ ...loading, action: false });
     }
@@ -72,13 +67,13 @@ const StudentPage = () => {
   const deleteStudent = async (id) => {
     if (!confirm("Delete this student?")) return;
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      await apiCall(`/students/${id}`, { method: "DELETE" });
       setStudents(prev => prev.filter(s => s.id !== id));
-    } catch {
-      alert("Could not delete student");
+    } catch (err) {
+      alert("Could not delete student: " + err.message);
     }
   };
+
 
   const openModal = (type, student = null) => {
     if (student) setCurrentStudent({ ...student });

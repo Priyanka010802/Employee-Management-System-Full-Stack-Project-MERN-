@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "/api"}/interviewSchedules`;
+import { useAuth } from "../context/AuthContext";
 
 const SchedulePage = () => {
   const navigate = useNavigate();
+  const { apiCall } = useAuth();
   const [data, setData] = useState({ telecaller: [], counselor: [], trainer: [], hr: [] });
   const [modal, setModal] = useState({ add: false, edit: false, view: false });
   const [loading, setLoading] = useState({ page: false, action: false });
@@ -22,19 +22,16 @@ const SchedulePage = () => {
     setLoading({ ...loading, page: true });
     setError("");
     try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("Failed to fetch data");
-      const allData = await res.json();
-      const interviews = allData;
+      const allData = await apiCall('/interviewSchedules');
       const categorized = {
-        telecaller: interviews.filter(item => item.role === 'Telecaller'),
-        counselor: interviews.filter(item => item.role === 'Counselor'),
-        trainer: interviews.filter(item => item.role === 'Trainer'),
-        hr: interviews.filter(item => item.role === 'HR')
+        telecaller: allData.filter(item => item.role === 'Telecaller'),
+        counselor: allData.filter(item => item.role === 'Counselor'),
+        trainer: allData.filter(item => item.role === 'Trainer'),
+        hr: allData.filter(item => item.role === 'HR')
       };
       setData(categorized);
     } catch (err) {
-      setError("Could not load schedule data. Check JSON Server at " + API_URL);
+      setError("Could not load schedule data. " + err.message);
     } finally {
       setLoading({ ...loading, page: false });
     }
@@ -45,19 +42,15 @@ const SchedulePage = () => {
     setLoading({ ...loading, action: true });
     setError("");
     try {
-      const url = isEdit ? `${API_URL}/${currentInterview.id}` : API_URL;
+      const endpoint = isEdit ? `/interviewSchedules/${currentInterview.id}` : '/interviewSchedules';
       const method = isEdit ? "PUT" : "POST";
       const interviewData = isEdit ? currentInterview : formData;
 
-      const res = await fetch(url, {
+      const result = await apiCall(endpoint, {
         method,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(interviewData)
       });
 
-      if (!res.ok) throw new Error(`Failed to ${isEdit ? 'update' : 'save'} interview`);
-
-      const result = await res.json();
       const roleKey = result.role.toLowerCase();
 
       setData(prev => ({
@@ -77,7 +70,7 @@ const SchedulePage = () => {
       setModal({ add: false, edit: false, view: false });
       setCurrentInterview(null);
     } catch (err) {
-      setError(`Could not ${isEdit ? 'update' : 'save'} interview. Please try again.`);
+      setError(`Could not ${isEdit ? 'update' : 'save'} interview. ${err.message}`);
     } finally {
       setLoading({ ...loading, action: false });
     }
@@ -86,14 +79,14 @@ const SchedulePage = () => {
   const deleteInterview = async (id, role) => {
     if (!confirm("Delete this interview?")) return;
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      await apiCall(`/interviewSchedules/${id}`, { method: "DELETE" });
       setData(prev => ({
         ...prev,
         [role.toLowerCase()]: prev[role.toLowerCase()].filter(item => item.id !== id)
       }));
-    } catch { alert("Could not delete interview"); }
+    } catch (err) { alert("Could not delete interview: " + err.message); }
   };
+
 
   const openModal = (type, interview = null, role = null) => {
     if (interview) setCurrentInterview({ ...interview });

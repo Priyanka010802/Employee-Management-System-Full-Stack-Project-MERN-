@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
 import { jwtDecode } from 'jwt-decode';
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+import axiosInstance from '../api/axios.api';
 
 const AuthContext = createContext(null);
 
@@ -55,27 +55,29 @@ export const AuthProvider = ({ children }) => {
 
     const apiCall = async (endpoint, options = {}) => {
         try {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                    ...(options.headers || {}),
-                },
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
-            return data;
+            // Remove leading slash to ensure it correctly appends to the /api prefix in baseURL
+            const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+
+            const config = {
+                url: cleanEndpoint,
+                method: options.method || 'GET',
+                data: options.body ? JSON.parse(options.body) : undefined,
+                headers: options.headers || {},
+            };
+            
+            const response = await axiosInstance(config);
+            return response.data;
         } catch (err) {
-            console.error(`API Call Error (${endpoint}):`, err);
-            throw err;
+
+            const errorMessage = err.response?.data?.message || err.message;
+            console.error(`API Call Error (${endpoint}):`, errorMessage);
+            throw new Error(errorMessage);
         }
     };
 
     const login = async (email, password, role) => {
         try {
             console.log('AuthContext: Attempting login...', { email, role });
-
 
             const data = await apiCall('/auth/login', {
                 method: 'POST',
@@ -113,4 +115,8 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+    return useContext(AuthContext);
+}
+
+

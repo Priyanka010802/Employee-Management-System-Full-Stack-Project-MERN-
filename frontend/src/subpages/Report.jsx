@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "/api"}/interviewSchedules`;
+import { useAuth } from "../context/AuthContext";
 
 const ReportPage = () => {
   const navigate = useNavigate();
+  const { apiCall } = useAuth();
   const [activePeriod, setActivePeriod] = useState("today");
   const [stats, setStats] = useState({
     today: { total: 0, connected: 0, scheduled: 0, offers: 0 },
@@ -24,18 +24,16 @@ const ReportPage = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("Failed to fetch data");
-      const allData = await res.json();
-      const interviewData = allData;
-      setInterviews(interviewData);
-      calculateStats(interviewData);
+      const allData = await apiCall('/interviewSchedules');
+      setInterviews(allData);
+      calculateStats(allData);
     } catch (err) {
-      setError("Could not load data. Check JSON Server at " + API_URL);
+      setError("Could not load data. " + err.message);
     } finally {
       setLoading(false);
     }
   };
+
 
   const calculateStats = (data) => {
     const now = new Date();
