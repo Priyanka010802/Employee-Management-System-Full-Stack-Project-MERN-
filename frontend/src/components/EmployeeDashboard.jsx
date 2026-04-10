@@ -1,6 +1,8 @@
 // EmployeeDashboard.jsx
 import React, { useState } from "react";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const EmployeeDashboard = ({ currentUserEmail }) => {
   const [attendanceMarked, setAttendanceMarked] = useState(false);
   const [loginTime, setLoginTime] = useState("");
@@ -60,7 +62,7 @@ const EmployeeDashboard = ({ currentUserEmail }) => {
 
     const todayDate = new Date().toISOString().split("T")[0];
 
-    await fetch("http://localhost:3000/attendance", {
+    await fetch(`${API_BASE}/attendance`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -92,7 +94,7 @@ const EmployeeDashboard = ({ currentUserEmail }) => {
     const todayDate = new Date().toISOString().split("T")[0];
     const recordId = `att_${todayDate}_${currentUserEmail}`;
 
-    const res = await fetch(`http://localhost:3000/attendance/${recordId}`);
+    const res = await fetch(`${API_BASE}/attendance/${recordId}`);
     const existing = res.ok ? await res.json() : null;
 
     const checkInDate = existing?.checkIn
@@ -119,7 +121,7 @@ const EmployeeDashboard = ({ currentUserEmail }) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await fetch(`http://localhost:3000/attendance/${recordId}`, {
+    await fetch(`${API_BASE}/attendance/${recordId}`, {
       method: existing ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedRecord),

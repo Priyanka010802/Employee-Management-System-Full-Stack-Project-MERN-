@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:3000/students";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/students`;
 
 const StudentPage = () => {
   const navigate = useNavigate();
