@@ -282,8 +282,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-Your Name - [Your GitHub Profile](https://github.com/yourusername)
-
+Your Name - Priyanka Sangamkar
 ## 🙏 Acknowledgments
 
 - React team for the amazing library
@@ -294,8 +293,8 @@ Your Name - [Your GitHub Profile](https://github.com/yourusername)
 ## 📧 Contact
 
 For any queries or support, please reach out:
-- Email: your.email@example.com
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: priyankasangamkar@gmail.com
+- GitHub: [https://github.com/Priyanka010802]
 
 ---
 
