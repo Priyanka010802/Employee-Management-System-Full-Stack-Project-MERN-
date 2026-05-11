@@ -276,6 +276,22 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Output
+
+<img width="1920" height="1080" alt="Screenshot (42)" src="https://github.com/user-attachments/assets/f7e3be1b-dc12-491b-bb9e-79b89c5181a8" />
+
+<img width="1920" height="1080" alt="Screenshot (43)" src="https://github.com/user-attachments/assets/b11dc0d2-8eff-4341-bb31-37a70754a7e7" />
+
+<img width="1920" height="1080" alt="Screenshot (44)" src="https://github.com/user-attachments/assets/a42b2a23-dedf-4ef0-9b3a-5394318462b3" />
+
+<img width="1920" height="1080" alt="Screenshot (45)" src="https://github.com/user-attachments/assets/bb9b2394-d649-449d-a7fd-acd0d232639d" />
+
+<img width="1920" height="1080" alt="Screenshot (46)" src="https://github.com/user-attachments/assets/b3417a7f-b76d-433e-bb55-00dbc5726e51" />
+
+<img width="1920" height="1080" alt="Screenshot (47)" src="https://github.com/user-attachments/assets/a6de617a-31dd-4d1c-964a-f2eb6664d5d6" />
+
+
+
 ## 📄 License
 
 This project is licensed under the MIT License.
